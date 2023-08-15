@@ -20,3 +20,4 @@ Cabe recalcar que las versiones instaladas pueden variar dependiendo el sistema 
 
 Para poder ejecutar el proyecto, deberás modificar el archivo [`config.py`](config.py), asegurandote de seguir las instrucciones dentro del archivo para poder crear las claves correctamente.
 
+Posteriormente, ejecutar el comando ```python3 main.py``` para la ejecución del proyecto.
