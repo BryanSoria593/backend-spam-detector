@@ -1,0 +1,153 @@
+{% extends './layout.html' %}
+{% block body %}
+
+<div class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-3xl mx-auto bg-white p-4 border border-gray-300 rounded-md shadow-lg">
+        <h2 class="text-2xl font-bold mb-4">Gracias por abrir esta página</h2>
+        <p class="mb-4">Por favor, si consideras que este correo electrónico es spam o tiene contenido malicioso,
+            aplasta el botón de <strong>reportar</strong>. En caso contrario, omita este proceso.</p>
+        <div class="mt-4">
+            <h3 class="text-lg font-semibold">Procesos de reporte:</h3>
+            <ul class="mt-4 space-y-4">
+                <li>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold">Se enviarán al administrador la siguiente información:</span>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-1 list-disc">
+                        <li>Fecha y hora de recibido</li>
+                        <li>Remitente y receptor del correo</li>
+                        <li>Asunto del correo</li>
+                        <li>Mensaje del correo</li>
+                        <li>Identificador del correo</li>
+                        <li>Ruta del correo</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold">Acciones que puede tomar el administrador:</span>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-1 list-disc">
+                        <li>Analizar el correo electrónico con los datos proporcionados</li>
+                        <li>Aplicar filtros con los datos proporcinados</li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold">Acciones que no hará el administrador:</span>
+                    </div>
+                    <ul class="pl-6 mt-2 space-y-1 list-disc">
+                        <li>Eliminar el correo</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="flex justify-end mt-6">
+            <button id="reportButton" onclick="accept()"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Reportar
+            </button>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="/static/css/sweetalert2.min.css">
+<script src="/static/js/sweetalert2.all.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        verifyToken();
+    });
+
+    async function verifyToken() {
+
+        try {
+            const token = window.location.href.split("/")[5];
+            const API = `http://localhost:5000/quarantine/validate/`;
+            const response = await fetch(API + token, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.ok) {
+                    Swal.fire({
+                        title: 'Token Verified',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Token Not Valid',
+                        text: data.message,
+                        icon: 'error',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            } else {
+                console.error('Error:', response.status);
+            }
+        } catch (error) {
+            console.log('Error al verificar el token:');
+        }
+    }
+
+    async function accept() {
+        try {
+            const confirmation = await Swal.fire({
+                title: '¿Deseas reportar este correo?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Reportar',
+                cancelButtonText: 'Cancelar',
+            });
+
+            if (confirmation.isConfirmed) {
+                const token = window.location.href.split("/")[5];
+                const API = `http://localhost:5000/quarantine/accept/`;
+                const response = await fetch(API + token, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                const data = await response.json();
+                if (data.ok) {
+                    Swal.fire({
+                        title: 'Reportado',
+                        text: data.message,
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error al reportar',
+                        text: data.message,
+                        icon: 'error',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: 'Se ha cancelado la petición.',
+                    icon: 'info',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    document.getElementById('reportButton').addEventListener('click', accept);
+</script>
+{% endblock %}
