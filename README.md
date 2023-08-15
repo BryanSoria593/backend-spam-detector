@@ -18,5 +18,5 @@ pip3 install secure-smtplib==0.1.1
 ```
 Cabe recalcar que las versiones instaladas pueden variar dependiendo el sistema operativo, en este caso, el backend desarrollado estaba en el SO Centos 7, por lo que las últimas versiones disponibles son las mencionadas previamente.
 
-Para poder ejecutar el proyecto, deberás modificar el archivo [`config.py`](config.py), asegurandote de seguir las instrucciones dentro del archivo para poder crear las claves correctamente
+Para poder ejecutar el proyecto, deberás modificar el archivo [`config.py`](config.py), asegurandote de seguir las instrucciones dentro del archivo para poder crear las claves correctamente.
 
